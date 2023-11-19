@@ -11,6 +11,8 @@ INTERESTED_STAT = 'stat.mobKills'
 INTERPRET_UUID_AS_PLAYER_ID = True
 # 直方图横轴细分区间的个数
 DIVISION = 30
+# 过滤掉大于这个数值的数据
+FILTER_HIGHER_THAN = None
 
 
 def read_config():
@@ -23,14 +25,17 @@ def read_config():
         INTERPRET_UUID_AS_PLAYER_ID = config["INTERPRET_UUID_AS_PLAYER_ID"]
         global DIVISION
         DIVISION = max(config["DIVISION"], 2)
-        print("读取配置文件成功")
-        return INTERESTED_STAT, INTERPRET_UUID_AS_PLAYER_ID, DIVISION
+        global FILTER_HIGHER_THAN
+        if config["FILTER_HIGHER_THAN"] is not None:
+            FILTER_HIGHER_THAN = config["FILTER_HIGHER_THAN"]
+        print("读取配置文件成功。")
+        return INTERESTED_STAT, INTERPRET_UUID_AS_PLAYER_ID, DIVISION, FILTER_HIGHER_THAN
     except Exception as e:
         print("读取配置文件失败")
         return None
 
 
-def main(interested_stat, interpret_enabled, division):
+def main(interested_stat, interpret_enabled, division, filter_higher_than):
     with (open(r'output.txt', 'w', encoding='utf-8') as out):
         # 读入文件
         stat_file_list = os.listdir('stats')
@@ -67,10 +72,20 @@ def main(interested_stat, interpret_enabled, division):
                     except KeyError as e:
                         continue
 
+        filtered_keys = []
+        for key in collect.keys():
+            if collect[key] > filter_higher_than:
+                filtered_keys.append(key)
+
+        if len(filtered_keys) > 0:
+            print("过滤了满足数值大于等于" + str(filter_higher_than) + "的玩家，共计" + str(len(filtered_keys)) + "人。")
+            for key in filtered_keys:
+                del collect[key]
+
         ratio = "%.2f%%" % (100.0 * len(collect) / len(stat_file_list))
 
         print(
-            "其中，统计信息中包含我们所关心的 " + interested_stat + " 数据的人共有" + str(
+            "统计信息中包含我们所关心的 " + interested_stat + " 数据的人共有" + str(
                 len(collect)) + "人，占比 " + ratio)
         out.writelines("其中，统计信息中包含我们所关心的 " + interested_stat + " 数据的人共有" + str(
             len(collect)) + "人，占比 " + ratio + "。\n")
@@ -106,6 +121,8 @@ INTERESTED_STAT: 'stat.mobKills'
 # 是否启用 ID 翻译。若是，还需提供 usernamecache.json
 INTERPRET_UUID_AS_PLAYER_ID: true
 # 直方图横轴细分区间的个数
-DIVISION: 30'''])
+DIVISION: 30
+# 过滤掉大于这个数值的数据
+FILTER_HIGHER_THAN: 6000'''])
 else:
-    main(result[0], result[1], result[2])
+    main(result[0], result[1], result[2], result[3])
