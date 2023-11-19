@@ -61,9 +61,8 @@ def main(interested_stat, interpret_enabled, division, filter_higher_than):
                 stat_dict = json.load(stat)
                 uuid = (stat_file.split("."))[0]
                 if INTERPRET_UUID_AS_PLAYER_ID:
-                    player_id = users[uuid]
                     try:
-                        collect[player_id] = stat_dict[interested_stat]
+                        collect[users[uuid]] = stat_dict[interested_stat]
                     except KeyError as e:
                         continue
                 else:
@@ -82,13 +81,19 @@ def main(interested_stat, interpret_enabled, division, filter_higher_than):
             for key in filtered_keys:
                 del collect[key]
 
+        # 输出有效信息比例
         ratio = "%.2f%%" % (100.0 * len(collect) / len(stat_file_list))
+        print("其中，统计信息中包含我们所关心的%s数据的人共有%d人，占比%s\n" % (interested_stat, len(collect), ratio))
+        out.writelines(
+            "其中，统计信息中包含我们所关心的%s数据的人共有%d人，占比%s\n" % (interested_stat, len(collect), ratio))
 
-        print(
-            "统计信息中包含我们所关心的 " + interested_stat + " 数据的人共有" + str(
-                len(collect)) + "人，占比 " + ratio)
-        out.writelines("其中，统计信息中包含我们所关心的 " + interested_stat + " 数据的人共有" + str(
-            len(collect)) + "人，占比 " + ratio + "。\n")
+        # 输出极值
+        print("其中，该项统计最大值是%d, 来自玩家%s" % (max(collect.values()), max(collect, key=collect.get)))
+        print("而该项统计最小值是%d, 来自玩家%s" % (min(collect.values()), min(collect, key=collect.get)))
+        out.writelines([
+            "其中，该项统计最大值是%d, 来自玩家%s" % (max(collect.values()), max(collect, key=collect.get)),
+            "而该项统计最小值是%d, 来自玩家%s" % (min(collect.values()), min(collect, key=collect.get))
+        ])
 
         # 绘制直方图
         plt.figure(dpi=60, figsize=(30, 20))
@@ -107,7 +112,6 @@ def main(interested_stat, interpret_enabled, division, filter_higher_than):
         plt.ylabel("Counts")
 
         plt.show()
-
 
 
 result = read_config()
