@@ -1,0 +1,5 @@
+.idea/
+/venv/
+/stats/
+output.txt
+usernamecache.json

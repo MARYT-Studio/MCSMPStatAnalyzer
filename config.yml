@@ -1,0 +1,7 @@
+# 配置选项
+# 我们关心的数据
+INTERESTED_STAT: 'stat.mobKills'
+# 是否启用 ID 翻译。若是，还需提供 usernamecache.json
+INTERPRET_UUID_AS_PLAYER_ID: true
+# 直方图横轴细分区间的个数
+DIVISION: 30
