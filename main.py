@@ -13,6 +13,8 @@ INTERPRET_UUID_AS_PLAYER_ID = True
 DIVISION = 30
 # 过滤掉大于这个数值的数据
 FILTER_HIGHER_THAN = None
+# 直方图图像DPI
+DPI_OF_HIST = 72
 
 
 def read_config():
@@ -28,14 +30,16 @@ def read_config():
         global FILTER_HIGHER_THAN
         if config["FILTER_HIGHER_THAN"] is not None:
             FILTER_HIGHER_THAN = config["FILTER_HIGHER_THAN"]
+        global DPI_OF_HIST
+        DPI_OF_HIST = config["DPI_OF_HIST"]
         print("读取配置文件成功。")
-        return INTERESTED_STAT, INTERPRET_UUID_AS_PLAYER_ID, DIVISION, FILTER_HIGHER_THAN
+        return INTERESTED_STAT, INTERPRET_UUID_AS_PLAYER_ID, DIVISION, FILTER_HIGHER_THAN, DPI_OF_HIST
     except Exception as e:
         print("读取配置文件失败")
         return None
 
 
-def main(interested_stat, interpret_enabled, division, filter_higher_than):
+def main(interested_stat, interpret_enabled, division, filter_higher_than, dpi_of_hist):
     with (open(r'output.txt', 'w', encoding='utf-8') as out):
         # 读入文件
         stat_file_list = os.listdir('stats')
@@ -99,7 +103,7 @@ def main(interested_stat, interpret_enabled, division, filter_higher_than):
         ])
 
         # 绘制直方图
-        plt.figure(dpi=60, figsize=(30, 20))
+        plt.figure(dpi=dpi_of_hist, figsize=(30, 20))
         data = list(collect.values())
         n, bins_of_hist, patches = plt.hist(data, bins=division - 1)
 
@@ -114,6 +118,7 @@ def main(interested_stat, interpret_enabled, division, filter_higher_than):
         plt.xlabel("Stat Value")
         plt.ylabel("Counts")
 
+        plt.savefig(r'histogram.png', dpi=dpi_of_hist)
         plt.show()
 
 
@@ -130,6 +135,8 @@ INTERPRET_UUID_AS_PLAYER_ID: true
 # 直方图横轴细分区间的个数
 DIVISION: 30
 # 过滤掉大于这个数值的数据
-FILTER_HIGHER_THAN: 6000'''])
+FILTER_HIGHER_THAN: 6000
+# 直方图图像DPI
+DPI_OF_HIST: 72'''])
 else:
-    main(result[0], result[1], result[2], result[3])
+    main(result[0], result[1], result[2], result[3], result[4])
