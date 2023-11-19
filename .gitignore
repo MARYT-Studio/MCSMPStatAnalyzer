@@ -1,5 +1,5 @@
-.idea/
-/venv/
-/stats/
-output.txt
-usernamecache.json
+/*
+!/LICENSE
+!/README.md
+!/*.py
+!/config.yml
