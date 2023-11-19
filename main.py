@@ -71,15 +71,18 @@ def main(interested_stat, interpret_enabled, division, filter_higher_than):
                     except KeyError as e:
                         continue
 
-        filtered_keys = []
-        for key in collect.keys():
-            if collect[key] > filter_higher_than:
-                filtered_keys.append(key)
+        # 过滤器
+        if filter_higher_than is not None:
+            filtered_keys = []
+            for key in collect.keys():
+                if collect[key] > filter_higher_than:
+                    filtered_keys.append(key)
 
-        if len(filtered_keys) > 0:
-            print("过滤了满足数值大于等于" + str(filter_higher_than) + "的玩家，共计" + str(len(filtered_keys)) + "人。")
-            for key in filtered_keys:
-                del collect[key]
+            if len(filtered_keys) > 0:
+                print("过滤了满足数值大于等于" + str(filter_higher_than) + "的玩家，共计" + str(
+                    len(filtered_keys)) + "人。")
+                for key in filtered_keys:
+                    del collect[key]
 
         # 输出有效信息比例
         ratio = "%.2f%%" % (100.0 * len(collect) / len(stat_file_list))
